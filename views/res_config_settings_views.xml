@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_loopjet" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.loopjet</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Loopjet Integration" name="loopjet_integration">
+                    <block title="Loopjet AI Integration">
+                        <setting id="loopjet_api_settings" string="API Key">
+                            <field name="loopjet_api_key" password="True" placeholder="Enter your Loopjet API key"/>
+                            <div class="text-muted mt-1">
+                                Get your API key from <a href="https://app.loopjet.io/api-usage" target="_blank">https://app.loopjet.io/api-usage</a>
+                            </div>
+                        </setting>
+                        <setting id="loopjet_auto_sync_setting" string="Auto-sync Settings" help="Automatically synchronize data to Loopjet">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <field name="loopjet_auto_sync_products" class="mr-2"/>
+                                        <label for="loopjet_auto_sync_products" class="mb-0">Auto-sync Products</label>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <field name="loopjet_auto_sync_contacts" class="mr-2"/>
+                                        <label for="loopjet_auto_sync_contacts" class="mb-0">Auto-sync Contacts</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <field name="loopjet_auto_sync_estimates" class="mr-2"/>
+                                        <label for="loopjet_auto_sync_estimates" class="mb-0">Auto-sync Quotations</label>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <field name="loopjet_auto_sync_invoices" class="mr-2"/>
+                                        <label for="loopjet_auto_sync_invoices" class="mb-0">Auto-sync Invoices</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-muted small mt-2">
+                                Keep Loopjet automatically synchronized with Odoo by enabling auto-sync for each data type
+                            </div>
+                        </setting>
+                        <setting id="loopjet_language_setting" string="Default Language" help="Language for AI-generated estimates">
+                            <field name="loopjet_default_language"/>
+                        </setting>
+                        <setting id="loopjet_batch_sync_setting" string="Batch Sync">
+                            <div class="row">
+                                <div class="col-12 col-md-6 mb-3">
+                                    <button name="action_sync_all_products" 
+                                            type="object" 
+                                            string="Sync All Products" 
+                                            class="btn-primary w-100"
+                                            icon="fa-cube"/>
+                                    <div class="text-muted mt-1 small">
+                                        Sync all products and services to Loopjet
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    <button name="action_sync_all_contacts" 
+                                            type="object" 
+                                            string="Sync All Contacts" 
+                                            class="btn-primary w-100"
+                                            icon="fa-users"/>
+                                    <div class="text-muted mt-1 small">
+                                        Sync all customers and suppliers
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-md-6 mb-3">
+                                    <button name="action_sync_all_estimates" 
+                                            type="object" 
+                                            string="Sync All Quotations" 
+                                            class="btn-primary w-100"
+                                            icon="fa-file-text-o"/>
+                                    <div class="text-muted mt-1 small">
+                                        Sync all draft and sent quotations
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 mb-3">
+                                    <button name="action_sync_all_invoices" 
+                                            type="object" 
+                                            string="Sync All Invoices" 
+                                            class="btn-primary w-100"
+                                            icon="fa-money"/>
+                                    <div class="text-muted mt-1 small">
+                                        Sync all posted invoices
+                                    </div>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

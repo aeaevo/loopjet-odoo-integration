@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Loopjet AI Estimate Integration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #764ba2;
+            font-size: 24px;
+            margin-top: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .screenshot {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .cta-button:hover {
+            background: #764ba2;
+        }
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🪄 Loopjet AI Estimate Integration</h1>
+        <p style="font-size: 18px; color: #666;">
+            Generate comprehensive estimates from CRM deals using advanced AI technology
+        </p>
+        
+        <div style="margin: 20px 0;">
+            <span class="badge">AI-Powered</span>
+            <span class="badge">CRM Integration</span>
+            <span class="badge">Auto-Sync</span>
+            <span class="badge">Multi-language</span>
+        </div>
+
+        <h2>✨ Features</h2>
+        <ul class="feature-list">
+            <li><strong>One-Click Estimate Generation</strong> - Click a button in any CRM deal to generate AI-powered estimates</li>
+            <li><strong>Automatic Information Extraction</strong> - Extracts notes, logs, comments, activities, and conversation history</li>
+            <li><strong>Intelligent Product Matching</strong> - AI matches requirements to your catalog or suggests new items</li>
+            <li><strong>Seamless Integration</strong> - Creates prefilled quotations directly in Odoo</li>
+            <li><strong>Product Synchronization</strong> - Sync your Odoo products to Loopjet automatically</li>
+            <li><strong>Multi-language Support</strong> - Generate estimates in English, German, Spanish, or French</li>
+        </ul>
+
+        <h2>🚀 How It Works</h2>
+        <ol>
+            <li>Open any CRM opportunity in Odoo</li>
+            <li>Click <strong>"Create Estimate with Loopjet"</strong> button</li>
+            <li>AI analyzes all deal information (notes, emails, activities)</li>
+            <li>AI generates estimate items with products, quantities, and pricing</li>
+            <li>New quotation is created and prefilled in Odoo</li>
+        </ol>
+
+        <div class="info-box">
+            <strong>💡 Smart Analysis</strong><br>
+            The AI examines your entire deal context including customer information, conversation history, 
+            activities, internal notes, and tags to generate the most accurate estimate possible.
+        </div>
+
+        <h2>⚙️ Setup</h2>
+        <ol>
+            <li>Install the module from Odoo Apps</li>
+            <li>Go to <strong>Settings → General Settings → Loopjet Integration</strong></li>
+            <li>Enter your Loopjet API key (get it from <a href="https://app.loopjet.io/settings" target="_blank">app.loopjet.io</a>)</li>
+            <li>Configure optional settings (auto-sync, language, etc.)</li>
+            <li>Start generating AI estimates!</li>
+        </ol>
+
+        <h2>💳 Pricing</h2>
+        <p>Estimate generation consumes Loopjet credits:</p>
+        <ul>
+            <li><strong>Simple estimate</strong> (≤5 items): 50 credits</li>
+            <li><strong>Medium estimate</strong> (6-10 items): 75 credits</li>
+            <li><strong>Complex estimate</strong> (>10 items): 100 credits</li>
+        </ul>
+        <p>Purchase credits in your Loopjet account.</p>
+
+        <h2>📚 Requirements</h2>
+        <ul>
+            <li>Odoo 14.0 or higher</li>
+            <li>Active Loopjet account with API access</li>
+            <li>Internet connection for API calls</li>
+        </ul>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="https://loopjet.io" target="_blank" class="cta-button">Visit Loopjet Website</a>
+            <a href="https://docs.loopjet.io" target="_blank" class="cta-button">View Documentation</a>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid #ddd;">
+
+        <div style="text-align: center; color: #999; font-size: 14px;">
+            <p>Developed by <strong>Loopjet Team</strong></p>
+            <p>
+                <a href="https://loopjet.io" target="_blank" style="color: #667eea;">Website</a> | 
+                <a href="https://docs.loopjet.io" target="_blank" style="color: #667eea;">Documentation</a> | 
+                <a href="mailto:support@loopjet.io" style="color: #667eea;">Support</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+

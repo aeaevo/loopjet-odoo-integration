@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Loopjet button to CRM lead form view -->
+    <record id="crm_lead_view_form_loopjet" model="ir.ui.view">
+        <field name="name">crm.lead.view.form.inherit.loopjet</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Add button in header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_generate_loopjet_estimate" 
+                        type="object" 
+                        string="Create Quotation with Loopjet" 
+                        class="oe_highlight"
+                        invisible="type != 'opportunity'"/>
+            </xpath>
+            
+            <!-- Add smart button to view generated estimates -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="action_view_loopjet_estimates"
+                        icon="fa-magic"
+                        invisible="loopjet_estimate_count == 0">
+                    <field name="loopjet_estimate_count" widget="statinfo" string="AI Estimates"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

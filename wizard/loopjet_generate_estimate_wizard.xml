@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="loopjet_generate_estimate_wizard_form" model="ir.ui.view">
+        <field name="name">loopjet.generate.estimate.wizard.form</field>
+        <field name="model">loopjet.generate.estimate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Quotation with Loopjet AI">
+                <header>
+                    <button name="action_generate_estimate" 
+                            string="Generate Quotation (30s-2min)" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_retry" 
+                            string="Retry" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'error'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-magic"/> Generate AI Quotation
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="lead_id" readonly="1"/>
+                            <field name="customer_id" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Deal Information" invisible="state != 'draft'">
+                            <group>
+                                <field name="extracted_info" readonly="1" nolabel="1" 
+                                       placeholder="Information extracted from the CRM deal..."/>
+                            </group>
+                            
+                            <group string="Customization">
+                                <field name="additional_instructions" 
+                                       placeholder="Optional: Add specific instructions for the AI (e.g., 'Include migration services', 'Add training sessions')"/>
+                                <field name="allow_new_items"/>
+                            </group>
+                            
+                            <div class="alert alert-info" role="alert">
+                                <strong>How it works:</strong>
+                                <ul>
+                                    <li>Loopjet AI will analyze all the information from this deal</li>
+                                    <li>It will extract relevant products, services, and requirements</li>
+                                    <li>Generate a comprehensive quotation with line items</li>
+                                    <li>Create a new quotation in Odoo prefilled with these items</li>
+                                </ul>
+                                <p class="mb-0">
+                                    <strong>Cost:</strong> 50-100 credits depending on complexity
+                                </p>
+                            </div>
+                        </page>
+                        
+                        <page string="Preview" invisible="state != 'done'">
+                            <group>
+                                <field name="estimate_preview" readonly="1" nolabel="1" widget="text"/>
+                            </group>
+                            
+                            <div class="alert alert-success" role="alert">
+                                <i class="fa fa-check-circle"/> Quotation generated successfully! 
+                                Review and send to customer.
+                            </div>
+                        </page>
+                        
+                        <page string="Error" invisible="state != 'error'">
+                            <group>
+                                <field name="error_message" readonly="1" nolabel="1" widget="text"/>
+                            </group>
+                            
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fa fa-exclamation-triangle"/> An error occurred while generating the quotation.
+                                Please check the error message above and try again.
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <footer invisible="state not in ['draft', 'error']">
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
+
