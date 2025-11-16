@@ -21,6 +21,11 @@
         - Odoo 14.0 or higher (tested with 14, 15, 16, 17, 18, and 19)
         - Active Loopjet account with API access
         - Loopjet API key configured in settings
+        
+        Compatibility:
+        - ✅ Odoo.sh (PaaS)
+        - ✅ On-premise / Self-hosted
+        - ❌ Odoo Online (SaaS) - Not supported due to Python code restrictions
     """,
     'author': 'Loopjet',
     'website': 'https://loopjet.io',
