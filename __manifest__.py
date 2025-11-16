@@ -2,7 +2,7 @@
     'name': 'Loopjet AI Estimate Integration',
     'version': '19.0.1.0.3',
     'category': 'Sales',
-    'summary': 'Generate AI-powered estimates from CRM deals using Loopjet',
+    'summary': 'AI-Powered Estimate Generation from CRM Deals - Transform opportunities into quotes instantly',
     'description': """
         Loopjet AI Estimate Integration
         ================================
@@ -31,6 +31,9 @@
         'sale',
         'product',
     ],
+    'external_dependencies': {
+        'python': ['requests>=2.28.0'],
+    },
     'data': [
         'security/ir.model.access.csv',
         'views/res_config_settings_views.xml',
@@ -39,6 +42,12 @@
         'wizard/loopjet_generate_estimate_wizard.xml',
     ],
     'images': [
+        'static/description/images/cover.png',
+        'static/description/images/settings.png',
+        'static/description/images/deal_overview.png',
+        'static/description/images/loopjet_modal.png',
+        'static/description/images/final_estimate.png',
+        'static/description/images/main_screenshot.png',
         'static/description/icon.png',
     ],
     'installable': True,
