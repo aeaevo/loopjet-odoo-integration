@@ -95,31 +95,4 @@ class ProductTemplate(models.Model):
                 _logger.error(error_msg)
                 raise  # Re-raise to be caught by batch sync
 
-    @api.model
-    def create(self, vals):
-        """Auto-sync to Loopjet if enabled."""
-        product = super(ProductTemplate, self).create(vals)
-        
-        auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_products', False)
-        if auto_sync:
-            product.sync_to_loopjet()
-        
-        return product
-    
-    def write(self, vals):
-        """Auto-sync to Loopjet if enabled and product is already synced."""
-        result = super(ProductTemplate, self).write(vals)
-        
-        # Don't trigger sync if only Loopjet metadata fields are being updated (prevents infinite loop)
-        loopjet_fields = {'loopjet_product_id', 'loopjet_synced', 'loopjet_last_sync'}
-        if set(vals.keys()).issubset(loopjet_fields):
-            return result
-        
-        auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_products', False)
-        if auto_sync:
-            synced_products = self.filtered(lambda p: p.loopjet_synced)
-            if synced_products:
-                synced_products.sync_to_loopjet()
-        
-        return result
 

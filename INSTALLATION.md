@@ -71,10 +71,10 @@ After installation:
 3. Enter your **Loopjet API Key**
    - Get your API key from: https://app.loopjet.io/api-usage
 4. Configure optional settings:
-   - **API URL**: Keep default `https://api.loopjet.io` unless using custom deployment
-   - **Auto-sync Products**: Enable to automatically sync products to Loopjet
    - **Default Language**: Choose language for AI-generated estimates
 5. Click **Save**
+
+> **Note**: Data synchronization happens automatically when you generate AI estimates. No manual syncing required!
 
 ## Verification
 
@@ -211,10 +211,13 @@ services:
 After installation:
 
 1. **Configure API Key** (required)
-2. **Sync Products** to Loopjet (optional but recommended)
-3. **Test with Sample Deal** to familiarize yourself
-4. **Train Your Team** on how to use the feature
-5. **Purchase Credits** if needed at https://app.loopjet.io/subscription
+2. **Test with Sample Deal** to familiarize yourself
+   - Create a CRM opportunity with a customer
+   - Add description of services/products needed
+   - Click "Create Quotation with Loopjet" 
+   - Data syncs automatically before AI generation!
+3. **Train Your Team** on how to use the feature
+4. **Purchase Credits** if needed at https://app.loopjet.io/subscription
 
 Happy estimating! 🎉
 

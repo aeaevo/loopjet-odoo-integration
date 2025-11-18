@@ -128,35 +128,6 @@ class SaleOrder(models.Model):
             except Exception as e:
                 _logger.error(f"Error syncing quotation {order.name} to Loopjet: {str(e)}")
 
-    @api.model
-    def create(self, vals_list):
-        """Auto-sync to Loopjet if enabled."""
-        orders = super(SaleOrder, self).create(vals_list)
-        
-        auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_estimates', False)
-        if auto_sync:
-            quotations = orders.filtered(lambda o: o.state in ['draft', 'sent'])
-            if quotations:
-                quotations.sync_to_loopjet()
-        
-        return orders
-    
-    def write(self, vals):
-        """Auto-sync to Loopjet if enabled and quotation is already synced."""
-        result = super(SaleOrder, self).write(vals)
-        
-        # Don't trigger sync if only Loopjet metadata fields are being updated
-        loopjet_fields = {'loopjet_estimate_id', 'loopjet_synced', 'loopjet_last_sync', 'loopjet_generated', 'loopjet_estimate_data', 'loopjet_reasoning'}
-        if set(vals.keys()).issubset(loopjet_fields):
-            return result
-        
-        auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_estimates', False)
-        if auto_sync:
-            synced_orders = self.filtered(lambda o: o.loopjet_synced and o.state in ['draft', 'sent'])
-            if synced_orders:
-                synced_orders.sync_to_loopjet()
-        
-        return result
 
 
 class SaleOrderLine(models.Model):

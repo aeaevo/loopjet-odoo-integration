@@ -1,6 +1,6 @@
 {
     'name': 'Loopjet AI Estimate Integration',
-    'version': '19.0.1.0.3',
+    'version': '19.0.1.0.4',
     'category': 'Sales',
     'summary': 'AI-Powered Estimate Generation from CRM Deals - Transform opportunities into quotes instantly',
     'description': """
@@ -37,7 +37,7 @@
         'product',
     ],
     'external_dependencies': {
-        'python': ['requests>=2.28.0'],
+        'python': ['requests', 'packaging'],
     },
     'data': [
         'security/ir.model.access.csv',

@@ -101,33 +101,4 @@ class AccountMove(models.Model):
             except Exception as e:
                 _logger.error(f"Error syncing invoice {invoice.name} to Loopjet: {str(e)}")
 
-    @api.model
-    def create(self, vals_list):
-        """Auto-sync to Loopjet if enabled."""
-        invoices = super(AccountMove, self).create(vals_list)
-        
-        auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_invoices', False)
-        if auto_sync:
-            customer_invoices = invoices.filtered(lambda i: i.move_type in ['out_invoice', 'out_refund'] and i.state != 'cancel')
-            if customer_invoices:
-                customer_invoices.sync_to_loopjet()
-        
-        return invoices
-    
-    def write(self, vals):
-        """Auto-sync to Loopjet if enabled and invoice is already synced."""
-        result = super(AccountMove, self).write(vals)
-        
-        # Don't trigger sync if only Loopjet metadata fields are being updated
-        loopjet_fields = {'loopjet_invoice_id', 'loopjet_synced', 'loopjet_last_sync'}
-        if set(vals.keys()).issubset(loopjet_fields):
-            return result
-        
-        auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_invoices', False)
-        if auto_sync:
-            synced_invoices = self.filtered(lambda i: i.loopjet_synced and i.move_type in ['out_invoice', 'out_refund'] and i.state != 'cancel')
-            if synced_invoices:
-                synced_invoices.sync_to_loopjet()
-        
-        return result
 

@@ -21,6 +21,29 @@ Generate AI-powered estimates from CRM opportunities/deals using Loopjet's advan
 
 This module is **fully compatible** with Odoo 19 (released September 2025) and takes advantage of new features like improved activities, enhanced CRM workflows, and better mobile support. See the [Odoo 19 Release Notes](https://www.odoo.com/odoo-19-release-notes) for details.
 
+## Quick Start with Docker 🐳
+
+The **fastest way** to test this plugin locally:
+
+```bash
+# Start Odoo with the plugin
+docker-compose up -d
+
+# Access Odoo at http://localhost:8069
+# Follow the setup wizard to create a database
+# Then install the Loopjet Integration from the Apps menu
+```
+
+**Full Docker documentation**: See [README.docker.md](README.docker.md) for detailed instructions, development mode, troubleshooting, and more.
+
+**Quick commands**:
+```bash
+make up          # Start services
+make logs        # View logs
+make upgrade     # Upgrade the module
+make clean       # Clean everything and start fresh
+```
+
 ## Installation
 
 ### 1. Install the Module

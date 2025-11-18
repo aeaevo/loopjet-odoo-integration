@@ -43,18 +43,18 @@
                             <group string="Customization">
                                 <field name="additional_instructions" 
                                        placeholder="Optional: Add specific instructions for the AI (e.g., 'Include migration services', 'Add training sessions')"/>
-                                <field name="allow_new_items"/>
                             </group>
                             
                             <div class="alert alert-info" role="alert">
                                 <strong>How it works:</strong>
                                 <ul>
                                     <li>Loopjet AI will analyze all the information from this deal</li>
-                                    <li>It will extract relevant products, services, and requirements</li>
-                                    <li>Generate a comprehensive quotation with line items</li>
+                                    <li>It will match requirements to your existing products and services</li>
+                                    <li>Generate a comprehensive quotation with line items from your catalog</li>
                                     <li>Create a new quotation in Odoo prefilled with these items</li>
                                 </ul>
                                 <p class="mb-0">
+                                    <strong>Note:</strong> Make sure you have products created in Odoo before generating estimates.<br/>
                                     <strong>Cost:</strong> 50-100 credits depending on complexity
                                 </p>
                             </div>

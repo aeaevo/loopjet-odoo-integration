@@ -39,13 +39,6 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
         help='Optional: Add specific instructions for the AI (e.g., "Include migration services", "Add training sessions")'
     )
     
-    allow_new_items = fields.Boolean(
-        string='Allow AI to Generate New Items',
-        default=False,
-        help='If enabled, AI can create new product/service items not in your Loopjet catalog. '
-             'If disabled, AI will only use products already synced to Loopjet.'
-    )
-    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('done', 'Done'),
@@ -87,17 +80,35 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
                 'Please click Cancel, add a customer to the opportunity, and try again.'
             ))
         
+        # Validate that products exist BEFORE syncing/generating
+        products = self.env['product.template'].search([('sale_ok', '=', True)], limit=1)
+        if not products:
+            raise UserError(_(
+                'No Products Available\n\n'
+                'You need to create at least one product or service before generating AI estimates.\n\n'
+                'Steps to fix:\n'
+                '1. Go to Sales → Products → Products\n'
+                '2. Create your products or services\n'
+                '3. Return here and try again\n\n'
+                'The AI needs your product catalog to generate accurate estimates.'
+            ))
+        
         # Show loading notification to user immediately (appears as soon as button is clicked)
         # This provides instant feedback while the AI processes (30s-2min)
         message = {
             'type': 'info',
-            'title': 'Generating Quotation...',
-            'message': '⏱️ Loopjet AI is analyzing your deal and creating a quotation. This usually takes 30 seconds to 2 minutes. Please wait...',
+            'title': 'Preparing & Syncing Data...',
+            'message': '⏱️ Syncing products, contact, and relevant data to Loopjet before generating estimate. This usually takes 30 seconds to 2 minutes. Please wait...',
             'sticky': True,  # Stays visible until completed
         }
         self.env['bus.bus']._sendone(self.env.user.partner_id, 'notification', message)
         
         try:
+            # Sync all products, services, customer contact, and related invoices/estimates
+            # BEFORE generating AI estimate to ensure AI has latest data
+            _logger.info(f"Starting automatic data sync for lead {self.lead_id.name}")
+            self._sync_data_to_loopjet()
+            _logger.info("Data sync completed, proceeding with AI estimate generation")
             
             # Get API configuration
             api_key = self.env['ir.config_parameter'].sudo().get_param('loopjet.api_key')
@@ -136,7 +147,7 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
                 'user_input': user_input,
                 'customer_name': self.customer_id.name if self.customer_id else None,
                 'customer_contact_data': customer_contact_data,
-                'allow_new_items': self.allow_new_items,
+                'allow_new_items': False,  # Always use existing products only
                 'auto_save': False,  # We'll create the sale order in Odoo, not in Loopjet
             }
             
@@ -370,4 +381,241 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
             'view_mode': 'form',
             'target': 'new',
         }
+
+    def _sync_data_to_loopjet(self):
+        """
+        Sync all relevant data to Loopjet before generating AI estimate.
+        This includes:
+        - All products/services
+        - The customer contact
+        - Related invoices and estimates for context
+        """
+        self.ensure_one()
+        
+        # Get API configuration
+        api_key = self.env['ir.config_parameter'].sudo().get_param('loopjet.api_key')
+        if not api_key:
+            raise UserError(_('Loopjet API key not configured.'))
+        
+        api_url = 'https://loopjet-api.fly.dev'
+        headers = {
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json',
+        }
+        
+        try:
+            # 1. Sync all products/services (batch API)
+            _logger.info("Syncing all products to Loopjet...")
+            self._batch_sync_products(api_url, headers)
+            
+            # 2. Sync the customer contact
+            _logger.info(f"Syncing customer {self.customer_id.name} to Loopjet...")
+            self._sync_customer_contact(api_url, headers)
+            
+            # 3. Sync related invoices and estimates for context
+            _logger.info("Syncing related invoices and estimates to Loopjet...")
+            self._sync_related_documents(api_url, headers)
+            
+            _logger.info("All data synced successfully to Loopjet")
+            
+        except Exception as e:
+            error_msg = f"Failed to sync data to Loopjet: {str(e)}"
+            _logger.error(error_msg)
+            raise UserError(_(f'Data Sync Error\n\n{error_msg}'))
+
+    def _batch_sync_products(self, api_url, headers):
+        """Batch sync all products to Loopjet."""
+        products = self.env['product.template'].search([
+            ('sale_ok', '=', True),  # Only products that can be sold
+        ])
+        
+        if not products:
+            _logger.info("No products found to sync")
+            return
+        
+        product_list = []
+        for product in products:
+            product_list.append({
+                'name': product.name,
+                'description': product.description_sale or product.description or '',
+                'is_service': product.type == 'service',
+                'price': float(product.list_price),
+                'currency': product.currency_id.name if product.currency_id else 'EUR',
+                'unit': product.uom_id.name if product.uom_id else 'piece',
+            })
+        
+        try:
+            url = f"{api_url}/api/v1/batch/products/batch"
+            response = requests.post(
+                url, 
+                json={'products': product_list, 'upsert': True}, 
+                headers=headers, 
+                timeout=60
+            )
+            
+            if response.status_code in [200, 201]:
+                result = response.json()
+                success_count = result.get('created', 0) + result.get('updated', 0)
+                _logger.info(f"Successfully synced {success_count} products to Loopjet")
+            else:
+                _logger.error(f"Batch product sync failed: {response.text}")
+                raise Exception(f"Product sync failed: {response.text[:200]}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Failed to connect to Loopjet API for product sync: {str(e)}")
+
+    def _sync_customer_contact(self, api_url, headers):
+        """Sync the customer contact to Loopjet."""
+        if not self.customer_id:
+            return
+        
+        contact_data = {
+            'name': self.customer_id.name,
+            'email': self.customer_id.email or None,
+            'phone': self.customer_id.phone or None,
+            'address_line1': self.customer_id.street or None,
+            'address_line2': self.customer_id.street2 or None,
+            'city': self.customer_id.city or None,
+            'state': self.customer_id.state_id.name if self.customer_id.state_id else None,
+            'postal_code': self.customer_id.zip or None,
+            'country': self.customer_id.country_id.name if self.customer_id.country_id else None,
+            'company': self.customer_id.commercial_company_name or self.customer_id.name,
+            'tax_id': self.customer_id.vat or None,
+            'website': self.customer_id.website or None,
+            'notes': self.customer_id.comment or None,
+            'type': 'customer',
+        }
+        
+        # Remove None values
+        contact_data = {k: v for k, v in contact_data.items() if v is not None}
+        
+        try:
+            # Use batch endpoint with upsert to avoid duplicates
+            url = f"{api_url}/api/v1/batch/contacts/batch"
+            response = requests.post(
+                url, 
+                json={'contacts': [contact_data], 'upsert': True}, 
+                headers=headers, 
+                timeout=30
+            )
+            
+            if response.status_code in [200, 201]:
+                _logger.info(f"Successfully synced contact {self.customer_id.name} to Loopjet")
+            else:
+                _logger.warning(f"Contact sync failed (non-critical): {response.text}")
+        except Exception as e:
+            _logger.warning(f"Failed to sync contact (non-critical): {str(e)}")
+
+    def _sync_related_documents(self, api_url, headers):
+        """Sync related invoices and estimates for this customer to provide context."""
+        if not self.customer_id:
+            return
+        
+        # Sync recent invoices for this customer (last 10)
+        invoices = self.env['account.move'].search([
+            ('partner_id', '=', self.customer_id.id),
+            ('move_type', 'in', ['out_invoice', 'out_refund']),
+            ('state', '!=', 'cancel'),
+        ], limit=10, order='invoice_date desc')
+        
+        if invoices:
+            invoice_list = []
+            for invoice in invoices:
+                invoice_data = {
+                    'invoice_number': invoice.name,
+                    'customer_info': {
+                        'name': invoice.partner_id.name,
+                        'email': invoice.partner_id.email,
+                        'phone': invoice.partner_id.phone,
+                    },
+                    'issue_date': invoice.invoice_date.isoformat() if invoice.invoice_date else None,
+                    'due_date': invoice.invoice_date_due.isoformat() if invoice.invoice_date_due else None,
+                    'status': 'sent' if invoice.state == 'posted' else 'draft',
+                    'items': [],
+                    'subtotal': float(invoice.amount_untaxed),
+                    'total_tax': float(invoice.amount_tax),
+                    'total': float(invoice.amount_total),
+                    'external_id': str(invoice.id),
+                    'external_system': 'odoo',
+                }
+                
+                # Add line items
+                for line in invoice.invoice_line_ids:
+                    if line.product_id:
+                        invoice_data['items'].append({
+                            'name': line.product_id.name,
+                            'description': line.name,
+                            'quantity': line.quantity,
+                            'unit_price': float(line.price_unit),
+                            'unit': line.product_uom_id.name if line.product_uom_id else 'unit',
+                        })
+                
+                invoice_list.append(invoice_data)
+            
+            try:
+                url = f"{api_url}/api/v1/batch/invoices/batch"
+                response = requests.post(url, json={'invoices': invoice_list}, headers=headers, timeout=60)
+                
+                if response.status_code in [200, 201]:
+                    _logger.info(f"Successfully synced {len(invoice_list)} invoices to Loopjet")
+                else:
+                    _logger.warning(f"Invoice sync failed (non-critical): {response.text}")
+            except Exception as e:
+                _logger.warning(f"Failed to sync invoices (non-critical): {str(e)}")
+        
+        # Sync recent estimates/quotations for this customer (last 10)
+        estimates = self.env['sale.order'].search([
+            ('partner_id', '=', self.customer_id.id),
+            ('state', 'in', ['draft', 'sent']),
+        ], limit=10, order='date_order desc')
+        
+        if estimates:
+            estimate_list = []
+            for estimate in estimates:
+                estimate_data = {
+                    'estimate_number': estimate.name,
+                    'customer_info': {
+                        'name': estimate.partner_id.name,
+                        'email': estimate.partner_id.email,
+                        'phone': estimate.partner_id.phone,
+                    },
+                    'issue_date': estimate.date_order.date().isoformat() if estimate.date_order else date.today().isoformat(),
+                    'valid_until': estimate.validity_date.isoformat() if estimate.validity_date else None,
+                    'status': 'sent' if estimate.state == 'sent' else 'draft',
+                    'items': [],
+                    'subtotal': float(estimate.amount_untaxed),
+                    'total_tax': float(estimate.amount_tax),
+                    'total': float(estimate.amount_total),
+                    'external_id': str(estimate.id),
+                    'external_system': 'odoo',
+                }
+                
+                # Add line items
+                for line in estimate.order_line:
+                    if line.product_id:
+                        uom_name = 'unit'
+                        if hasattr(line, 'product_uom') and line.product_uom:
+                            uom_name = line.product_uom.name
+                        elif hasattr(line, 'product_uom_id') and line.product_uom_id:
+                            uom_name = line.product_uom_id.name
+                        
+                        estimate_data['items'].append({
+                            'name': line.product_id.name,
+                            'description': line.name,
+                            'quantity': line.product_uom_qty if hasattr(line, 'product_uom_qty') else line.quantity,
+                            'unit_price': float(line.price_unit),
+                            'unit': uom_name,
+                        })
+                
+                estimate_list.append(estimate_data)
+            
+            try:
+                url = f"{api_url}/api/v1/batch/estimates/batch"
+                response = requests.post(url, json={'estimates': estimate_list}, headers=headers, timeout=60)
+                
+                if response.status_code in [200, 201]:
+                    _logger.info(f"Successfully synced {len(estimate_list)} estimates to Loopjet")
+                else:
+                    _logger.warning(f"Estimate sync failed (non-critical): {response.text}")
+            except Exception as e:
+                _logger.warning(f"Failed to sync estimates (non-critical): {str(e)}")
 

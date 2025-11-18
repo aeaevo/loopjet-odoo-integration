@@ -15,34 +15,6 @@ class ResConfigSettings(models.TransientModel):
         help='Your Loopjet API authentication key. Get it from your Loopjet account settings.'
     )
     
-    loopjet_auto_sync_products = fields.Boolean(
-        string='Auto-sync Products',
-        config_parameter='loopjet.auto_sync_products',
-        default=False,
-        help='Automatically sync products to Loopjet when created or updated in Odoo.'
-    )
-    
-    loopjet_auto_sync_contacts = fields.Boolean(
-        string='Auto-sync Contacts',
-        config_parameter='loopjet.auto_sync_contacts',
-        default=False,
-        help='Automatically sync contacts to Loopjet when created or updated in Odoo.'
-    )
-    
-    loopjet_auto_sync_estimates = fields.Boolean(
-        string='Auto-sync Quotations',
-        config_parameter='loopjet.auto_sync_estimates',
-        default=False,
-        help='Automatically sync quotations/estimates to Loopjet when created or updated in Odoo.'
-    )
-    
-    loopjet_auto_sync_invoices = fields.Boolean(
-        string='Auto-sync Invoices',
-        config_parameter='loopjet.auto_sync_invoices',
-        default=False,
-        help='Automatically sync invoices to Loopjet when created or updated in Odoo.'
-    )
-    
     loopjet_default_language = fields.Selection(
         [
             ('en', 'English'),

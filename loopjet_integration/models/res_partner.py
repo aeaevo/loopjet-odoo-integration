@@ -90,33 +90,4 @@ class ResPartner(models.Model):
             except Exception as e:
                 _logger.error(f"Error syncing contact {contact.name} to Loopjet: {str(e)}")
 
-    @api.model
-    def create(self, vals):
-        """Auto-sync to Loopjet if enabled."""
-        contact = super(ResPartner, self).create(vals)
-        
-        # Only sync if it's a customer or supplier (not internal/employee contacts)
-        if contact.customer_rank > 0 or contact.supplier_rank > 0:
-            auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_contacts', False)
-            if auto_sync:
-                contact.sync_to_loopjet()
-        
-        return contact
-    
-    def write(self, vals):
-        """Auto-sync to Loopjet if enabled and contact is already synced."""
-        result = super(ResPartner, self).write(vals)
-        
-        # Don't trigger sync if only Loopjet metadata fields are being updated (prevents infinite loop)
-        loopjet_fields = {'loopjet_contact_id', 'loopjet_synced', 'loopjet_last_sync'}
-        if set(vals.keys()).issubset(loopjet_fields):
-            return result
-        
-        auto_sync = self.env['ir.config_parameter'].sudo().get_param('loopjet.auto_sync_contacts', False)
-        if auto_sync:
-            synced_contacts = self.filtered(lambda c: c.loopjet_synced and (c.customer_rank > 0 or c.supplier_rank > 0))
-            if synced_contacts:
-                synced_contacts.sync_to_loopjet()
-        
-        return result
 

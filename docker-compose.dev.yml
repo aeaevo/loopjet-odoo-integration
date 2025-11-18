@@ -1,0 +1,24 @@
+# Development override for docker-compose
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+version: '3.8'
+
+services:
+  odoo:
+    # Enable development mode with auto-reload
+    command: >
+      --dev=all
+      --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons
+      --db_host=db
+      --db_port=5432
+      --db_user=odoo
+      --db_password=odoo
+      --log-level=debug
+      --workers=0
+    environment:
+      # Enable debug mode
+      - ODOO_DEV_MODE=reload,qweb,werkzeug,xml
+    # Mount source for live editing
+    volumes:
+      - ./loopjet_integration:/mnt/extra-addons/loopjet_integration
+      - odoo-web-data:/var/lib/odoo
+

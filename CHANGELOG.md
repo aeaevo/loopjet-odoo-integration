@@ -63,6 +63,48 @@ All notable changes to the Loopjet Odoo Integration will be documented in this f
 - Password field for API key input
 - Access rights for sales users and managers
 
+## [1.0.4] - 2025-11-18
+
+### Changed
+- **Automatic Data Synchronization**: When generating AI estimates, the plugin now automatically syncs:
+  - All products/services to provide complete catalog to AI
+  - Customer contact information
+  - Related invoices and estimates (last 10) for historical context
+- Removed manual sync buttons from settings (no longer needed)
+- Removed auto-sync toggle settings (always syncs on estimate generation)
+- Simplified settings page with clear explanation of automatic sync behavior
+- Updated INSTALLATION.md to reflect new sync workflow
+- **Removed "Allow AI to Generate New Items" checkbox**: AI now ALWAYS uses existing products/services only
+- **Added product validation**: Shows clear error if no products exist, guiding users to create products first
+
+### Added
+- Docker support with complete setup (Dockerfile, docker-compose.yml)
+- Makefile for convenient Docker commands
+- Migration script for smooth upgrades
+- RELEASE_NOTES.md with detailed upgrade instructions
+- README.docker.md with comprehensive Docker documentation
+- DOCKER_OVERVIEW.md with visual guides and workflows
+
+### Fixed
+- Python 3.12 compatibility in Docker (PEP 668 handling)
+- Added `packaging` dependency for Odoo 19 requirement parsing
+
+### Benefits
+- **Simpler UX**: No need to remember to sync data manually
+- **Always Up-to-Date**: AI always has latest product catalog and customer data
+- **Better Context**: AI receives historical invoices/estimates for better suggestions
+- **Less Configuration**: Fewer settings to manage
+- **More Predictable**: AI only uses your defined product catalog, no unexpected items
+- **Better Guidance**: Clear error messages guide users when products are missing
+
+### Technical
+- Moved sync logic from model hooks to wizard pre-generation step
+- Uses batch API endpoints for efficient syncing
+- Non-critical syncs (contacts, invoices) fail gracefully without blocking AI generation
+- Product sync is critical and will show error if fails
+- `allow_new_items` parameter hardcoded to `False` in API calls
+- Pre-generation validation checks for product existence
+
 ## [Unreleased]
 
 ### Planned

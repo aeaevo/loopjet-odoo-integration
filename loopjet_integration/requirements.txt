@@ -1,4 +1,8 @@
 # Python dependencies for Loopjet Odoo Integration
 
+# Packaging is required by Odoo to parse version requirements
+packaging>=21.0
+
+# Requests for API calls
 requests>=2.28.0
 
