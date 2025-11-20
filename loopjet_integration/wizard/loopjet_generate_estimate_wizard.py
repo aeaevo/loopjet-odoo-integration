@@ -39,6 +39,23 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
         help='Optional: Add specific instructions for the AI (e.g., "Include migration services", "Add training sessions")'
     )
     
+    language = fields.Selection(
+        [
+            ('en', 'English'),
+            ('de', 'German'),
+            ('es', 'Spanish'),
+            ('fr', 'French'),
+            ('it', 'Italian'),
+            ('pt', 'Portuguese'),
+            ('nl', 'Dutch'),
+            ('pl', 'Polish'),
+        ],
+        string='Language',
+        default=lambda self: self.env['ir.config_parameter'].sudo().get_param('loopjet.default_language', 'en'),
+        required=True,
+        help='Language for the generated estimate. Defaults to the language set in settings.'
+    )
+    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('done', 'Done'),
@@ -149,10 +166,8 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
                 'customer_contact_data': customer_contact_data,
                 'allow_new_items': False,  # Always use existing products only
                 'auto_save': False,  # We'll create the sale order in Odoo, not in Loopjet
+                'language': self.language or 'en',  # Use the language from the wizard
             }
-            
-            # Get default language
-            default_language = self.env['ir.config_parameter'].sudo().get_param('loopjet.default_language', 'en')
             
             _logger.info(f"Calling Loopjet API to generate estimate for lead {self.lead_id.name}")
             _logger.debug(f"Request data: {json.dumps(request_data, indent=2)}")

@@ -41,6 +41,7 @@
                             </group>
                             
                             <group string="Customization">
+                                <field name="language"/>
                                 <field name="additional_instructions" 
                                        placeholder="Optional: Add specific instructions for the AI (e.g., 'Include migration services', 'Add training sessions')"/>
                             </group>
