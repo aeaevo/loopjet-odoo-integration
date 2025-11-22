@@ -18,7 +18,7 @@
         - Full Odoo 19 compatibility with latest UX improvements
         
         Requirements:
-        - Odoo 14.0 or higher (tested with 14, 15, 16, 17, 18, and 19)
+        - Odoo 19.0 (tested and verified for Odoo 19)
         - Active Loopjet account with API access
         - Loopjet API key configured in settings
         
