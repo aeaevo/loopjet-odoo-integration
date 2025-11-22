@@ -1,5 +1,5 @@
 # Loopjet Odoo Integration - Development Dockerfile
-FROM odoo:19
+FROM odoo:18
 
 # Switch to root to install dependencies
 USER root
