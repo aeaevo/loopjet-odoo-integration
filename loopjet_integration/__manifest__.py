@@ -1,6 +1,6 @@
 {
     'name': 'Loopjet AI Estimate Integration',
-    'version': '19.0.1.0.5',
+    'version': '17.0.1.0.5',
     'category': 'Sales',
     'summary': 'AI-Powered Estimate Generation from CRM Deals - Transform opportunities into quotes instantly',
     'description': """
@@ -15,10 +15,10 @@
         - AI-powered estimate item suggestions
         - Seamless prefilling of Odoo sale orders/quotes
         - Product/service synchronization with Loopjet
-        - Full Odoo 19 compatibility with latest UX improvements
+        - Full Odoo 17 compatibility with latest UX improvements
         
         Requirements:
-        - Odoo 14.0 or higher (tested with 14, 15, 16, 17, 18, and 19)
+        - Odoo 17.0 (tested and verified for Odoo 17)
         - Active Loopjet account with API access
         - Loopjet API key configured in settings
         
