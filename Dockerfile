@@ -5,13 +5,12 @@ FROM odoo:18
 USER root
 
 # Install Python dependencies for the plugin
-# Using --break-system-packages is safe in Docker containers (isolated environment)
 # Install packaging first (needed by Odoo to parse version requirements)
-RUN pip3 install --no-cache-dir --break-system-packages packaging
+RUN pip3 install --no-cache-dir packaging
 
 # Install plugin dependencies
 COPY loopjet_integration/requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-cache-dir --break-system-packages -r /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
 # Create directory for extra addons
 RUN mkdir -p /mnt/extra-addons
