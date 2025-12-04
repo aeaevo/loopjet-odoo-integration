@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Migration script for Loopjet Integration v19.0.1.0.4
+# Migration script for Loopjet Integration v17.0.1.0.4
 
 import logging
 
@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 def migrate(cr, version):
     """
-    Migration for version 19.0.1.0.4
+    Migration for version 17.0.1.0.4
     
     Changes:
     - Removed 'allow_new_items' field from wizard (now always False)
@@ -16,7 +16,7 @@ def migrate(cr, version):
     - Added product validation
     """
     _logger.info("=" * 80)
-    _logger.info("Migrating Loopjet Integration to version 19.0.1.0.4")
+    _logger.info("Migrating Loopjet Integration to version 17.0.1.0.4")
     _logger.info("=" * 80)
     
     # Check if the wizard model exists and has records with the old field
@@ -36,6 +36,6 @@ def migrate(cr, version):
     _logger.info("  - Automatic sync on estimate generation enabled")
     _logger.info("  - Product validation added before generation")
     
-    _logger.info("Migration to 19.0.1.0.4 completed successfully")
+    _logger.info("Migration to 17.0.1.0.4 completed successfully")
     _logger.info("=" * 80)
 
