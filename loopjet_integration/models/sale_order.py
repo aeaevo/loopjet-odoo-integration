@@ -88,6 +88,9 @@ class SaleOrder(models.Model):
                     'external_system': 'odoo',
                 }
                 
+                # Get company currency as fallback
+                company_currency = self.env.company.currency_id.name if self.env.company.currency_id else 'EUR'
+                
                 # Add line items
                 for line in order.order_line:
                     if line.product_id:
@@ -104,6 +107,7 @@ class SaleOrder(models.Model):
                             'quantity': line.product_uom_qty if hasattr(line, 'product_uom_qty') else line.quantity,
                             'unit_price': float(line.price_unit),
                             'unit': uom_name,
+                            'currency': order.currency_id.name if order.currency_id else company_currency,
                         })
                 
                 # If already synced, update; otherwise create
