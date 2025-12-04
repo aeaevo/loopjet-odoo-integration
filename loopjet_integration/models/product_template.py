@@ -52,13 +52,20 @@ class ProductTemplate(models.Model):
                 
                 # Prepare product data for Loopjet API
                 # API expects is_service and handles transformation to database type field
+                # Currency fallback: product currency → company currency → EUR
+                company_currency = self.env.company.currency_id.name if self.env.company.currency_id else 'EUR'
+                product_currency = product.currency_id.name if product.currency_id else company_currency
+                
+                # Unit fallback: product UoM → 'unit'
+                product_unit = product.uom_id.name if product.uom_id else 'unit'
+                
                 product_data = {
                     'name': product.name,
                     'description': product.description_sale or product.description or '',
                     'is_service': product.type == 'service',
                     'price': float(product.list_price),
-                    'currency': product.currency_id.name if product.currency_id else 'EUR',
-                    'unit': product.uom_id.name if product.uom_id else 'piece',
+                    'currency': product_currency,
+                    'unit': product_unit,
                 }
                 
                 _logger.info(f"Product data: {product_data}")
