@@ -63,6 +63,17 @@ All notable changes to the Loopjet Odoo Integration will be documented in this f
 - Password field for API key input
 - Access rights for sales users and managers
 
+## [1.0.5] - 2025-12-04
+
+### Changed
+- **Improved Currency Handling**: Products now use company currency as fallback instead of hardcoded EUR
+- **Improved Unit Handling**: Consistent 'unit' fallback for products without UoM
+- **Currency in Line Items**: Invoice and estimate line items now include currency when syncing to Loopjet
+- **UI Improvement**: Replaced narrow "AI Generated" alert with professional web_ribbon widget
+
+### Fixed
+- Migration directories now correctly match branch version prefixes (17.0, 18.0, 19.0)
+
 ## [1.0.4] - 2025-11-18
 
 ### Changed
