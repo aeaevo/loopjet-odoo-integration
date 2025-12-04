@@ -448,15 +448,24 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
             _logger.info("No products found to sync")
             return
         
+        # Get company currency as fallback (similar to Zoho's org currency fallback)
+        company_currency = self.env.company.currency_id.name if self.env.company.currency_id else 'EUR'
+        
         product_list = []
         for product in products:
+            # Currency fallback: product currency → company currency → EUR
+            product_currency = product.currency_id.name if product.currency_id else company_currency
+            
+            # Unit fallback: product UoM → 'unit' (matching Zoho's fallback)
+            product_unit = product.uom_id.name if product.uom_id else 'unit'
+            
             product_list.append({
                 'name': product.name,
                 'description': product.description_sale or product.description or '',
                 'is_service': product.type == 'service',
                 'price': float(product.list_price),
-                'currency': product.currency_id.name if product.currency_id else 'EUR',
-                'unit': product.uom_id.name if product.uom_id else 'piece',
+                'currency': product_currency,
+                'unit': product_unit,
             })
         
         try:
@@ -525,6 +534,9 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
         if not self.customer_id:
             return
         
+        # Get company currency as fallback for line items
+        company_currency = self.env.company.currency_id.name if self.env.company.currency_id else 'EUR'
+        
         # Sync recent invoices for this customer (last 10)
         invoices = self.env['account.move'].search([
             ('partner_id', '=', self.customer_id.id),
@@ -562,6 +574,7 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
                             'quantity': line.quantity,
                             'unit_price': float(line.price_unit),
                             'unit': line.product_uom_id.name if line.product_uom_id else 'unit',
+                            'currency': invoice.currency_id.name if invoice.currency_id else company_currency,
                         })
                 
                 invoice_list.append(invoice_data)
@@ -619,6 +632,7 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
                             'quantity': line.product_uom_qty if hasattr(line, 'product_uom_qty') else line.quantity,
                             'unit_price': float(line.price_unit),
                             'unit': uom_name,
+                            'currency': estimate.currency_id.name if estimate.currency_id else company_currency,
                         })
                 
                 estimate_list.append(estimate_data)
