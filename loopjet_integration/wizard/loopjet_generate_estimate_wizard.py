@@ -332,17 +332,10 @@ class LoopjetGenerateEstimateWizard(models.TransientModel):
                 ('name', '=ilike', item_data['name'])
             ], limit=1)
         
-        # If still not found, create a new product
+        # If still not found, skip this item (AI should only use existing products)
         if not product:
-            product_vals = {
-                'name': item_data['name'],
-                'description_sale': item_data.get('description', ''),
-                'list_price': item_data.get('unit_price', 0.0),
-                'type': 'service',  # Default to service
-                'loopjet_product_id': item_data.get('product_id'),
-            }
-            product = self.env['product.product'].create(product_vals)
-            _logger.info(f"Created new product: {product.name}")
+            _logger.warning(f"Skipping item '{item_data.get('name')}' - no matching product found in catalog")
+            return
         
         # Calculate discount
         discount_percentage = item_data.get('discount_percentage', 0.0)
